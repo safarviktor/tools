@@ -2,7 +2,7 @@ A tool to compare random files using the built-in Visual Studio diff tool.
 
 It supports
 
-- drag & drop of either 1 by 1
+- drag & drop of 1 by 1 file
 - drag & drop both files at the same time (GUI hopefully intutitive)
 - paste the full file path into the respective text box
 - paste raw text from text box (will create a temp file)
