@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Prism.Commands;
@@ -13,15 +16,47 @@ namespace VCompare
         private string _file1;
         private string _file2;
         private string _vsPath;
+        private bool _working;
+        private const string VISUALSTUDIOPATH = "VisualStudioPath";
 
         public ICommand LaunchCommand { get; private set; }
+        public ICommand PasteFile1Command { get; private set; }
+        public ICommand PasteFile2Command { get; private set; }
 
         public MainWindowVM()
         {
-            LaunchCommand = new DelegateCommand(this.LaunchCompareTool);
-            VSPath = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.exe";
+            LaunchCommand = new DelegateCommand(LaunchCompareTool);
+            PasteFile1Command = new DelegateCommand(() => Paste(1));
+            PasteFile2Command = new DelegateCommand(() => Paste(2));
+            VSPath = ConfigurationManager.AppSettings[VISUALSTUDIOPATH];
         }
-        
+
+        private void Paste(int fileIndex)
+        {
+            if (!_working)
+            {
+                _working = true;
+                if (Clipboard.ContainsText(TextDataFormat.Text))
+                {
+                    string clipboardText = Clipboard.GetText(TextDataFormat.Text);
+                    var tempFile = Path.GetTempFileName();
+                    File.WriteAllText(tempFile, clipboardText);
+                    switch (fileIndex)
+                    {
+                        case 1:
+                            File1 = tempFile;
+                            break;
+                        case 2:
+                            File2 = tempFile;
+                            break;
+                        default:
+                            throw new IndexOutOfRangeException();
+                    }
+                }
+                _working = false;
+            }
+        }
+
         private void LaunchCompareTool()
         {
             if (FileExists(File1) && FileExists(File2))

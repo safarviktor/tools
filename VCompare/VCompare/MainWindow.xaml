@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:VCompare"
         mc:Ignorable="d"
         Title="V Compare Launcher" 
         Width="700" 
-        Height="360">
+        Height="390">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -26,6 +27,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
             <Label 
@@ -33,18 +35,26 @@
                 Grid.Column="0"
                 Content="File 1"
                 />
-            <TextBox 
+            <extToolkit:WatermarkTextBox 
                 Grid.Row="0"
                 Grid.Column="1"
                 Text="{Binding File1}"
+                Watermark="Paste file 1 path"
                 BorderBrush="{Binding File1BorderBrush}"
                 BorderThickness="2"
+                />
+            <Button 
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="5,0,0,0"
+                Content="Paste text from clipboard"
+                Command="{Binding PasteFile1Command}"
                 />
 
             <Label 
                 Grid.Row="1"
                 Grid.Column="0"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Margin="0,5,0,0"
                 Height="100"
                 Content="Drop file 1 or both files"
@@ -68,6 +78,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <Label 
@@ -75,18 +86,27 @@
                 Grid.Column="0"
                 Content="File 2"
             />
-            <TextBox 
+            <extToolkit:WatermarkTextBox 
                 Grid.Row="0"
                 Grid.Column="1"
                 Text="{Binding File2}"
+                Watermark="Paste file 2 path"
                 BorderBrush="{Binding File2BorderBrush}"
                 BorderThickness="2"
+            />
+
+            <Button 
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="5,0,0,0"
+                Content="Paste text from clipboard"
+                Command="{Binding PasteFile2Command}"
             />
 
             <Label 
                 Grid.Row="1"
                 Grid.Column="0"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Margin="0,5,0,0"
                 Height="100"
                 Content="Drop file 2 or both files"
@@ -109,18 +129,21 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Label 
+            <StackPanel
                 Grid.Column="0"
-                Content="Visual Studio path:"/>
-
-            <TextBox 
-                Grid.Column="1"
-                Margin="5,0,0,0"
-                Text="{Binding VSPath}"
-                BorderBrush="{Binding VSPathBorderBrush}"/>
+                Grid.ColumnSpan="2"
+                Margin="5,0,0,0">
+                <Label 
+                    Content="Visual Studio path (from App.config):"/>
+                <Label 
+                    Content="{Binding VSPath}"
+                    BorderThickness="1"
+                    BorderBrush="{Binding VSPathBorderBrush}"/>
+            </StackPanel>
 
             <Button 
                 Grid.Column="2"
+                VerticalAlignment="Bottom"
                 Margin="5,0,0,0"
                 Height="30"
                 Content="Launch comparer"
