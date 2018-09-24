@@ -1,0 +1,113 @@
+﻿<Window x:Class="SqlTools.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SqlTools"
+        mc:Ignorable="d"
+        Title="SQL tools" 
+        Height="600" Width="800">
+    <Grid
+        Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label 
+                Grid.Row="0"
+                Content="Query"/>
+            <TextBox 
+                Grid.Row="1"
+                Margin="5"
+                Text="{Binding InputSql}"
+                AcceptsReturn="True"
+                />
+        </Grid>
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5">
+            <TextBlock 
+                Width="100"
+                Margin="5"
+                Text="Generate statement from query" TextWrapping="WrapWithOverflow"/>
+
+            <ItemsControl ItemsSource="{Binding Path=Operations}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton GroupName="Operations" Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="5"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <CheckBox 
+                Margin="5"
+                Content="Include identity column" 
+                IsChecked="{Binding IncludeIdentity}" />
+        </StackPanel>
+
+        <Grid
+            Grid.Column="0"
+            Grid.Row="1">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label 
+                Grid.Row="0"
+                Content="Result statement"/>
+            <ScrollViewer
+                Grid.Row="1"
+                Margin="5"
+                HorizontalScrollBarVisibility="Auto">
+                <TextBox
+                    Text="{Binding ResultText}"
+                    IsReadOnly="True"
+                    PreviewMouseUp="Result_SelectAll"
+                />
+            </ScrollViewer>
+        </Grid>
+
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5">
+            <TextBlock 
+                Width="100"
+                Margin="5"
+                Text="Data source"/>
+
+            <ItemsControl ItemsSource="{Binding Path=DataSources}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton GroupName="DataSources" Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="5"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button 
+                Margin="5"
+                Content="GO"
+                Command="{Binding GoCommand}"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
