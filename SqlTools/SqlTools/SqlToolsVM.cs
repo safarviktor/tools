@@ -31,8 +31,8 @@ namespace SqlTools
 
         private void SelectDefault()
         {
-            Operations.First(x => x.Name.EqualsIgnoreCase("INSERT")).IsSelected = true;
-            DataSources.First(x => x.Name.EqualsIgnoreCase("Sidra_dev")).IsSelected = true;
+            Operations.First().IsSelected = true;
+            DataSources.First().IsSelected = true;
         }
 
         private static List<CheckBoxEntry<string>> GetDataSources()
@@ -137,19 +137,28 @@ namespace SqlTools
             var searchpattern = "FROM ";
             var tableBegin = inputSql.IndexOf(searchpattern, StringComparison.CurrentCultureIgnoreCase) + searchpattern.Length;
             var tableEnd = inputSql.IndexOf(" ", tableBegin);
+
             if (tableEnd < 0)
             {
                 tableEnd = inputSql.IndexOf(Environment.NewLine, tableBegin);
             }
+            else
+            {
+                var potentialTablename = inputSql.Substring(tableBegin, tableEnd - tableBegin);
+                if (potentialTablename.Contains(Environment.NewLine))
+                {
+                    tableEnd = inputSql.IndexOf(Environment.NewLine, tableBegin);
+                }
+            }
 
             if (tableEnd < 0)
             {
-                throw new Exception("Unable to determine main table. Please use space or new line after 'FROM <main table>'");
+                tableEnd = inputSql.Length; // assuming table is the last word in the statement
             }
 
             return inputSql.Substring(tableBegin, tableEnd - tableBegin);
         }
-
+        
         private string GenerateStatements(DataTable data, OperationsEnum operation, string mainTable, DataTable schema)
         {
             var identityColumn = GetIdentityColumnName(schema);
@@ -160,7 +169,10 @@ namespace SqlTools
             var valuesBeginning = GetSingleStatementValueBeginning(operation);
             var valuesEnding = GetSingleStatementValueEnding(operation);
 
-            var statement = string.Empty;
+            var statement = IncludeIdentity 
+                ? $"SET IDENTITY_INSERT {mainTable} ON" + Environment.NewLine
+                : string.Empty;
+
             for (int i = 0; i < data.Rows.Count; i++)
             {
                 statement += statementConstant;
@@ -170,7 +182,9 @@ namespace SqlTools
                 statement += Environment.NewLine;
             }
 
-            return statement;
+            return IncludeIdentity 
+                ? $"{statement}SET IDENTITY_INSERT {mainTable} OFF"
+                : statement;
         }
 
         private string GetIdentityColumnName(DataTable schema)
@@ -235,14 +249,14 @@ namespace SqlTools
             {
                 var value = (string)dataRow[index];
                 value = value.Replace("'", "''");
-                return $"'{value}'";
+                return $"N'{value}'";
             }
 
             if (columns[index].DataType == typeof(DateTime))
                 return $"'{Convert.ToDateTime(dataRow[index]):yyyy-MM-dd HH:mm:ss:fff}'";
 
             if (columns[index].DataType == typeof(bool))
-                return Convert.ToBoolean(columns[index]) 
+                return Convert.ToBoolean(dataRow[index]) 
                     ? "1"
                     : "0";
 

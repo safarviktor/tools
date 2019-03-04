@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SqlTools"
         mc:Ignorable="d"
-        Title="SQL tools" 
-        Height="600" Width="800">
+        Title="SQL tools" >
     <Grid
         Margin="5">
         <Grid.ColumnDefinitions>
@@ -98,7 +97,9 @@
             <ItemsControl ItemsSource="{Binding Path=DataSources}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <RadioButton GroupName="DataSources" Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="5"/>
+                        <RadioButton GroupName="DataSources" IsChecked="{Binding IsSelected}" Margin="5">
+                            <TextBlock Text="{Binding Name}" />
+                        </RadioButton>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

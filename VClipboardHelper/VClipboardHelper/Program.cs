@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -39,6 +41,19 @@ namespace VClipboardHelper
                 return;
             }
 
+            if (IsSql(mainInput))
+            {
+                Clipboard.SetText(BeautifySql(mainInput));
+                return;
+            }
+
+            if (IsLinqToSqlVariables(mainInput))
+            {
+                var update = ProcessLinqToSqlVariables(mainInput);
+                Clipboard.SetText(update);
+                return;
+            }
+
             // list to CSV
             if (mainInput.Contains(Environment.NewLine))
             {
@@ -52,6 +67,108 @@ namespace VClipboardHelper
                 Clipboard.SetText(string.Concat("'", mainInput.Replace(",", "','"), "'"));
                 return;
             }
+        }
+
+        private static string BeautifySql(string mainInput)
+        {
+            var keyWordsToPrefixWithNewLine = new List<string>
+            {
+                "select ",
+                "from ",
+                "update ",
+                "set ",
+                "where ",
+                "group by ",
+                "order by ",
+                "having ",
+                "drop ",
+                "create ",
+                "cross ",
+                "left join ",
+                "left outer join ",
+                "right join ",
+                "right outer join ",
+                "cross apply ",
+                "outer apply ",
+                "cross join ",
+                "inner join ",
+                "join ",
+                "declare "
+            };
+
+            var keywordsToUpper = new List<string>
+            {
+                " desc",
+                " asc",
+                " table",
+                " top ",
+                " and ",
+                " is not null",
+                " is null",
+                " not null",
+                " null",
+                " on ",
+                " as ",
+                " int ",
+                " int"+Environment.NewLine,
+                " int=",
+                " varchar(",
+                " varchar"+Environment.NewLine,
+                " nvarchar(",
+                " bit ",
+                " bit"+Environment.NewLine,
+            };
+
+            foreach (var keyword in keyWordsToPrefixWithNewLine)
+            {
+                mainInput = mainInput.Replace(keyword.ToUpper(), Environment.NewLine + keyword.ToUpper());
+                mainInput = mainInput.Replace(keyword, Environment.NewLine + keyword.ToUpper());
+            }
+
+            foreach (var keyword in keywordsToUpper)
+            {
+                mainInput = mainInput.Replace(keyword, keyword.ToUpper());
+            }
+
+            return mainInput;
+        }
+
+        private static bool IsSql(string mainInput)
+        {
+            return (mainInput.ContainsIgnoreCase("SELECT") && mainInput.ContainsIgnoreCase("FROM"))
+                   || (mainInput.ContainsIgnoreCase("INSERT") && mainInput.ContainsIgnoreCase("INTO"))
+                   || (mainInput.ContainsIgnoreCase("UPDATE") && mainInput.ContainsIgnoreCase("SET"));
+        }
+
+        // expected input:
+        // N'@p__linq__0 bit,@p__linq__1 int',@p__linq__0=1,@p__linq__1=7
+        // N'@_msparam_0 nvarchar(4000)',@_msparam_0=N'master'
+        private static string ProcessLinqToSqlVariables(string mainInput)
+        {
+            // remove leading N
+            if (mainInput.StartsWith("N"))
+            {
+                mainInput = mainInput.Substring(1);
+            }
+
+            // remove leading ['] (apostrophe)
+            if (mainInput.StartsWith("'"))
+            {
+                mainInput = mainInput.Substring(1);
+            }
+
+            // the next apostrophe is the delimiter between declarations and values
+            var declarations = mainInput.Substring(0, mainInput.IndexOf('\''));
+            var values = mainInput.Substring(mainInput.IndexOf('\'') + 1).Substring(2); // remove the ['] and the first [,@]
+
+            declarations = $"DECLARE {declarations}";
+            var valueList = values.Split(new string[] {",@"}, StringSplitOptions.None).Select(x => $"{Environment.NewLine}set @{x}");
+            return declarations + string.Join("", valueList);
+        }
+
+        private static bool IsLinqToSqlVariables(string mainInput)
+        {
+            return mainInput.Contains("p__linq__") || mainInput.Contains("_msparam_");
         }
 
         private static bool IsStackTrace(string mainInput)

@@ -8,10 +8,13 @@ Text transformation tool. Current version provides these transformations on text
 
 - list → CSV
 - CSV → single quoted CSV 
+- Stack Trace formatting
+- SQL parameters to SQL declaration + value set
 
 
 ======== How to =======
 - Get the exe file
 - Place a shortcut on you desktop
 - Go to the shortcut properties
-- Set a Shortcut Key (eg. I use CTRL+ALT+C which means that I can do a sequence CTRL+C - CTRL+ALT+C - CTRL+ALT+C to transform a column from DB into a SQL-friendly quoted CSV
+- Set a Shortcut Key
+-- eg. I use CTRL+ALT+C which means that I can do a sequence CTRL+C - CTRL+ALT+C - CTRL+ALT+C to transform a column from DB into a SQL-friendly quoted CSV

@@ -1,0 +1,32 @@
+﻿<Window x:Class="ConfigMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConfigMonitor"
+        mc:Ignorable="d"
+        Title="V Config Monitor"
+        SizeToContent="WidthAndHeight"
+        WindowStyle="ToolWindow"
+        MouseDown="MainWindow_OnMouseDown"
+        Topmost="True"
+        >
+    <DataGrid 
+        ItemsSource="{Binding Path=Configs}"
+        AlternatingRowBackground="BurlyWood"  
+        AlternationCount="2"
+        AutoGenerateColumns="False"
+        IsReadOnly="True"
+        CanUserSortColumns="False"
+        FontSize="10"
+        >
+        <DataGrid.Columns>
+            <DataGridTextColumn
+                Header="Config path" 
+                Binding="{Binding Key}" />
+            <DataGridTextColumn
+                Header="Connection string" 
+                Binding="{Binding Value}" />
+        </DataGrid.Columns>
+    </DataGrid>
+</Window>
