@@ -1,4 +1,6 @@
-REM REG QUERY "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" /v Release
+REM Windows batch to find the .NET Framework version the current system us running.
+REM Based on 
+REM https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 
 @echo OFF
 
