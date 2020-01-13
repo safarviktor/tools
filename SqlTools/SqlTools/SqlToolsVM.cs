@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -252,6 +253,12 @@ namespace SqlTools
                 return $"N'{value}'";
             }
 
+            if (columns[index].DataType == typeof(Guid))
+            {
+                var value = (Guid)dataRow[index];
+                return $"N'{value}'";
+            }
+
             if (columns[index].DataType == typeof(DateTime))
                 return $"'{Convert.ToDateTime(dataRow[index]):yyyy-MM-dd HH:mm:ss:fff}'";
 
@@ -260,7 +267,18 @@ namespace SqlTools
                     ? "1"
                     : "0";
 
+            if (columns[index].DataType == typeof(byte[]))
+                return $"0x{ByteArrayToString((byte[])dataRow[index])}";
+
             return $"{dataRow[index]}";
+        }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            var hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
         }
 
         private string GetSingleStatementEnding(OperationsEnum operation)
