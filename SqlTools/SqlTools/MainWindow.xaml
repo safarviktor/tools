@@ -108,6 +108,12 @@
                 Margin="5"
                 Content="GO"
                 Command="{Binding GoCommand}"/>
+
+            <Button 
+                Margin="5"
+                Content="Get LP Content"
+                Command="{Binding GetLPContentCommand}"/>
+
         </StackPanel>
 
     </Grid>

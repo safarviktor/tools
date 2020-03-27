@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -27,6 +29,7 @@ namespace SqlTools
             Operations = GetOperations(); 
             DataSources = GetDataSources();
             GoCommand = new DelegateCommand(Go);
+            GetLPContentCommand = new DelegateCommand(GetLPContent);
             SelectDefault();
         }
 
@@ -85,6 +88,46 @@ namespace SqlTools
             {
                 _resultText = value;
                 RaisePropertyChanged(nameof(ResultText));
+            }
+        }
+
+        private void GetLPContent()
+        {
+            if (InputSql.IsNotNullOrEmpty())
+            {
+                var connectionString = DataSources.FirstOrDefault(x => x.IsSelected);
+                if (connectionString == null)
+                {
+                    MessageBox.Show("Please select a data source.");
+                    return;
+                }
+
+                var data = new DataTable();
+
+                using (var connection = new SqlConnection(connectionString.Value))
+                {
+                    connection.Open();
+                    var command = new SqlCommand(InputSql, connection);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        data.Load(reader);
+                    }
+
+                    connection.Close();
+                }
+
+                var dir = @"C:/temp/retrievedLandP/" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                Directory.CreateDirectory(dir);
+
+                foreach (System.Data.DataRow row in data.Rows)
+                {
+                    var binaryContent = row.Field<byte[]>("joa_exportedTemplate");
+                    var name = row.Field<Guid>("joa_uniqueId");
+                    System.IO.File.WriteAllBytes( Path.Combine(dir, $"{name}.pdf"), binaryContent);
+                }
+
+                Process.Start(dir);
             }
         }
 
@@ -321,6 +364,7 @@ namespace SqlTools
 
 
         public ICommand GoCommand { get; private set; }
+        public ICommand GetLPContentCommand { get; private set; }
 
         public List<CheckBoxEntry<OperationsEnum>> Operations
         {

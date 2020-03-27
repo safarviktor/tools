@@ -34,6 +34,13 @@ namespace VClipboardHelper
         {
             var mainInput = Clipboard.GetText();
 
+            if (IsHttpLink(mainInput))
+            {
+                var update = $@"<a href=""{mainInput}"" target=""_blank"">{mainInput}</a>";
+                Clipboard.SetText(update);
+                return;
+            }
+
             if (IsStackTrace(mainInput))
             {
                 var update = mainInput.Replace(" at ", Environment.NewLine + " at ");
@@ -67,6 +74,14 @@ namespace VClipboardHelper
                 Clipboard.SetText(string.Concat("'", mainInput.Replace(",", "','"), "'"));
                 return;
             }
+        }
+
+        private static bool IsHttpLink(string mainInput)
+        {
+            return (
+                mainInput.StartsWith("http://")
+                || mainInput.StartsWith("https://")
+            ) && !mainInput.Contains(Environment.NewLine);
         }
 
         private static string BeautifySql(string mainInput)
