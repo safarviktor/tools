@@ -34,6 +34,13 @@ namespace VClipboardHelper
         {
             var mainInput = Clipboard.GetText();
 
+            if (IsSqlTableInfo(mainInput))
+            {
+                var update = CSharpModelBuilder.GetCsharpModel(mainInput);
+                Clipboard.SetText(update);
+                return;
+            }
+
             if (IsHttpLink(mainInput))
             {
                 var update = $@"<a href=""{mainInput}"" target=""_blank"">{mainInput}</a>";
@@ -74,6 +81,12 @@ namespace VClipboardHelper
                 Clipboard.SetText(string.Concat("'", mainInput.Replace(",", "','"), "'"));
                 return;
             }
+        }
+
+
+        private static bool IsSqlTableInfo(string mainInput)
+        {
+            return mainInput.StartsWith(CSharpModelBuilder.SqlTableInfoIdentifier);
         }
 
         private static bool IsHttpLink(string mainInput)
