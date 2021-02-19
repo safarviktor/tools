@@ -24,31 +24,45 @@ namespace VClipboardHelper
 
         public static string GetCsharpModel(string mainInput)
         {
-            var result = string.Empty;
+            var csharpModel = string.Empty;
+            var sqlQuery = "/************* SQL QUERY ****************************" + Environment.NewLine;
+            var sqlInsert = "/************* SQL INSERT ****************************" + Environment.NewLine;
+            sqlInsert += "INSERT INTO dbo.[TABLE_NAME]" + Environment.NewLine + "(" + Environment.NewLine;
 
             string[] tableColumns = mainInput.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-            var columnDefinition = tableColumns.First(x => !x.StartsWith(SqlTableInfoIdentifier));
-            var columnName = columnDefinition.Split('\t').First().Split('_');
-            var tablePrefix = columnName.Length > 1
-                ? columnName[0] + "_"
-                : string.Empty;
+            var tablePrefix = GetTablePrefix(tableColumns);
 
             foreach (var tableColumn in tableColumns)
             {
                 if (tableColumn.StartsWith(SqlTableInfoIdentifier))
                     continue;
 
-                result += $"public {GetCsharpModelType(tableColumn)} {GetCsharpModelPropertyName(tableColumn, tablePrefix)} {{ get; set; }}" + Environment.NewLine;
+                var splits = tableColumn.Split('\t');
+                var columnName = splits[0];
+                var propertyName = GetCsharpModelPropertyName(tablePrefix, columnName);
+                csharpModel += $"public {GetCsharpModelType(splits)} {propertyName} {{ get; set; }}" + Environment.NewLine;
+                sqlQuery += $", {columnName} AS [{{nameof(CLASSNAME.{propertyName})}}]{Environment.NewLine}";
+                sqlInsert += $", {columnName}{Environment.NewLine}";
             }
 
-            return result;
+            sqlQuery += "*******************************************************/";
+            sqlInsert += $"){Environment.NewLine}*******************************************************/";
+
+            return csharpModel + Environment.NewLine + Environment.NewLine + sqlQuery + Environment.NewLine + sqlInsert;
         }
 
-        private static string GetCsharpModelPropertyName(string tableColumn, string tablePrefix)
+        private static string GetTablePrefix(string[] tableColumns)
         {
-            var splits = tableColumn.Split('\t');
-            var columnName = splits[0];
+            var columnDefinition = tableColumns.First(x => !x.StartsWith(SqlTableInfoIdentifier));
+            var columnName = columnDefinition.Split('\t').First().Split('_');
+            return columnName.Length > 1
+                ? columnName[0] + "_"
+                : string.Empty;
+        }
+
+        private static string GetCsharpModelPropertyName(string tablePrefix, string columnName)
+        {   
             if (tablePrefix.Length > 0 && columnName.StartsWith(tablePrefix))
             {
                 columnName = columnName.Substring(tablePrefix.Length);
@@ -57,9 +71,8 @@ namespace VClipboardHelper
             return columnName.Substring(0, 1).ToUpper() + columnName.Substring(1);
         }
 
-        private static string GetCsharpModelType(string tableColumn)
-        {
-            var splits = tableColumn.Split('\t');
+        private static string GetCsharpModelType(string[] splits)
+        {   
             var sqlType = splits[1];
             var nullable = splits[6];
             var dotnetType = ConvertSqlServerFormatToCSharp(sqlType);
