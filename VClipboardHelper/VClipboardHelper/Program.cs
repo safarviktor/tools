@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace VClipboardHelper
@@ -33,6 +35,20 @@ namespace VClipboardHelper
         private static void DoWork()
         {
             var mainInput = Clipboard.GetText();
+
+            if (IsClass(mainInput))
+            {
+                var update = SqlTableBuilder.CreateSqlTable(mainInput);
+                Clipboard.SetText(update);
+                return;
+            }
+
+            if (IsJson(mainInput))
+            {
+                var update = PrettyPrintJson(mainInput);
+                Clipboard.SetText(update);
+                return;
+            }
 
             if (IsSqlTableInfo(mainInput))
             {
@@ -83,6 +99,36 @@ namespace VClipboardHelper
             }
         }
 
+        private static bool IsClass(string mainInput)
+        {
+            mainInput = mainInput.Trim();
+
+            return 
+                mainInput.StartsWith("public class")
+                || mainInput.StartsWith("protected class")
+                || mainInput.StartsWith("internal class");
+        }
+
+        private static string PrettyPrintJson(string mainInput)
+        {
+            var fnam = JsonConvert.DeserializeObject<dynamic>(mainInput);
+            return JsonConvert.SerializeObject(fnam, Formatting.Indented);
+        }
+
+        private static bool IsJson(string mainInput)
+        {
+            var withoutWhiteSpace = Regex.Replace(mainInput, @"\s+", "");
+            return 
+                (
+                   withoutWhiteSpace.StartsWith("{\"")
+                || withoutWhiteSpace.StartsWith("{[")                 
+                )
+                && 
+                (
+                    withoutWhiteSpace.EndsWith("\"}") 
+                 || withoutWhiteSpace.EndsWith("]}")
+                );
+        }
 
         private static bool IsSqlTableInfo(string mainInput)
         {
