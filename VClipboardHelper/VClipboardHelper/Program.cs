@@ -46,7 +46,7 @@ namespace VClipboardHelper
 
 			if (IsArcGISFields(mainInput))
 			{
-				var update = AcrGisFieldsToCSharpViewModel.Execute(mainInput);
+				var update = AcrGISFieldsToCSharpViewModel.Execute(mainInput);
 				Clipboard.SetText(update);
 				return;
 			}

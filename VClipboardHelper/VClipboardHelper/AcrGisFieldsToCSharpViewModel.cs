@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace VClipboardHelper
 {
-	internal static class AcrGisFieldsToCSharpViewModel
+	internal static class AcrGISFieldsToCSharpViewModel
 	{
 		/*
 		 Fields:
