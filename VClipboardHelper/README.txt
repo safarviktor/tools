@@ -11,6 +11,9 @@ Text transformation tool. Current version provides these transformations on text
 - Stack Trace formatting
 - SQL parameters to SQL declaration + value set
 
+- ArcGIS:
+-- fields (as defined on a feature service layer) to C# class
+-- domains (as defined on queryDomains REST service endpoint) to C# enums 
 
 ======== How to =======
 - Get the exe file
