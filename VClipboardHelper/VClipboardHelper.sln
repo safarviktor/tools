@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{9BB86C
 	ProjectSection(SolutionItems) = preProject
 		docs\images\arcgis_domains.png = docs\images\arcgis_domains.png
 		docs\images\arcgis_fields.png = docs\images\arcgis_fields.png
+		docs\images\CsharpToSqlTable.png = docs\images\CsharpToSqlTable.png
+		docs\images\listToCsv.png = docs\images\listToCsv.png
+		docs\images\sqlparamsToSqlVariables.png = docs\images\sqlparamsToSqlVariables.png
+		docs\images\sqlTableToCSharp.png = docs\images\sqlTableToCSharp.png
 	EndProjectSection
 EndProject
 Global
