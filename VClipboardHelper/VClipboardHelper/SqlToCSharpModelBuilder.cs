@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VClipboardHelper
 {
-    public static class CSharpModelBuilder
+    public static class SqlToCSharpModelBuilder
     {
         public const string SqlTableInfoIdentifier = "Column_name	Type	Computed";
 

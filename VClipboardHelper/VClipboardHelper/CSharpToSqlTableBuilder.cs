@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VClipboardHelper
 {
-    public static class SqlTableBuilder
+    public static class CSharpToSqlTableBuilder
     {
         public static string CreateSqlTable(string mainInput)
         {

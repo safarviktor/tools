@@ -34,11 +34,26 @@ namespace VClipboardHelper
 
         private static void DoWork()
         {
-            var mainInput = Clipboard.GetText();
+            var mainInput = Clipboard.GetText().Trim();
 
-            if (IsClass(mainInput))
+			if (IsArcGISDomains(mainInput))
             {
-                var update = SqlTableBuilder.CreateSqlTable(mainInput);
+				var update = AcrGISDomainsToCSharpEnums.Execute(mainInput);
+				Clipboard.SetText(update);
+				return;
+			}
+
+
+			if (IsArcGISFields(mainInput))
+			{
+				var update = AcrGisFieldsToCSharpViewModel.Execute(mainInput);
+				Clipboard.SetText(update);
+				return;
+			}
+
+			if (IsClass(mainInput))
+            {
+                var update = CSharpToSqlTableBuilder.CreateSqlTable(mainInput);
                 Clipboard.SetText(update);
                 return;
             }
@@ -52,7 +67,7 @@ namespace VClipboardHelper
 
             if (IsSqlTableInfo(mainInput))
             {
-                var update = CSharpModelBuilder.GetCsharpModel(mainInput);
+                var update = SqlToCSharpModelBuilder.GetCsharpModel(mainInput);
                 Clipboard.SetText(update);
                 return;
             }
@@ -99,7 +114,17 @@ namespace VClipboardHelper
             }
         }
 
-        private static bool IsClass(string mainInput)
+		private static bool IsArcGISDomains(string mainInput)
+		{
+			return mainInput.StartsWith("{\"domains\":");
+		}
+
+		private static bool IsArcGISFields(string mainInput)
+		{
+            return mainInput.StartsWith("Fields:");
+		}
+
+		private static bool IsClass(string mainInput)
         {
             mainInput = mainInput.Trim();
 
@@ -132,7 +157,7 @@ namespace VClipboardHelper
 
         private static bool IsSqlTableInfo(string mainInput)
         {
-            return mainInput.StartsWith(CSharpModelBuilder.SqlTableInfoIdentifier);
+            return mainInput.StartsWith(SqlToCSharpModelBuilder.SqlTableInfoIdentifier);
         }
 
         private static bool IsHttpLink(string mainInput)
