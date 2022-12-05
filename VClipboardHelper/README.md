@@ -7,7 +7,8 @@ Text transformation tool. Takes your clipboard as input, replaces it with output
 * Place a shortcut on you desktop
 * Go to the shortcut properties
 * Set a Shortcut Key
-  * eg. I use CTRL+ALT+C which means that I can do a sequence CTRL+C - CTRL+ALT+C - CTRL+ALT+C to transform a column from DB into a SQL-friendly quoted CSV
+  * eg. I use CTRL+ALT+C which means that I can do a sequence CTRL+C - CTRL+ALT+C - CTRL+V to get Profit!
+  * but you can also run this via a click (eg. from the taskbar) :)
 
 ## Implemented transformations
 
