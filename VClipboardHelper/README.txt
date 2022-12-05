@@ -13,7 +13,9 @@ Text transformation tool. Current version provides these transformations on text
 
 - ArcGIS:
 -- fields (as defined on a feature service layer) to C# class
+![alt text](docs/images/arcgis_fields.png)
 -- domains (as defined on queryDomains REST service endpoint) to C# enums 
+![alt text](docs/images/arcgis_domains.png)
 
 ======== How to =======
 - Get the exe file
