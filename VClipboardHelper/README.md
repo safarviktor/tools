@@ -3,11 +3,11 @@
 Text transformation tool. Takes your clipboard as input, replaces it with output. 
 
 ## How to
-- Get the exe file
-- Place a shortcut on you desktop
-- Go to the shortcut properties
-- Set a Shortcut Key
--- eg. I use CTRL+ALT+C which means that I can do a sequence CTRL+C - CTRL+ALT+C - CTRL+ALT+C to transform a column from DB into a SQL-friendly quoted CSV
+* Get the exe file
+* Place a shortcut on you desktop
+* Go to the shortcut properties
+* Set a Shortcut Key
+  * eg. I use CTRL+ALT+C which means that I can do a sequence CTRL+C - CTRL+ALT+C - CTRL+ALT+C to transform a column from DB into a SQL-friendly quoted CSV
 
 ## Implemented transformations
 
@@ -24,29 +24,29 @@ Order of these is important as if the tool determines the input is of eg. ArcGIS
 ![CsharpToSqlTable](docs/images/CsharpToSqlTable.png)
 
 - Pretty print JSON
--- this works pretty well, unlike the SQL pretty print below
+  - this works pretty well, unlike the SQL pretty print below
 
 - SQL table info to C# class
--- SQL: sp_help 'TableName'
--- generates this result set; copy the 2nd table with columns to transfor into a C# model
--- includes a SQL INSERT INTO TableName statement
+  - SQL: sp_help 'TableName'
+  - generates this result set; copy the 2nd table with columns to transfor into a C# model
+  - includes a SQL INSERT INTO TableName statement
 ![sqlTableToCSharp](docs/images/sqlTableToCSharp.png)
 
 - HTTP link to HTML anchor element
 
 - Stack Trace formatting
--- when your stack trace is logged without formatting and you want to inspect it
+  - when your stack trace is logged without formatting and you want to inspect it
 
 - Ugly SQL → semi-pretty SQL
--- it's not very smart, so far adding a new line before some key words and capitalizing most of SQL keywords
--- handy when you have a large query as one-liner
--- could use a SQL parser and do it properly but no time!
+  - it's not very smart, so far adding a new line before some key words and capitalizing most of SQL keywords
+  - handy when you have a large query as one-liner
+  - could use a SQL parser and do it properly but no time!
 
 - SQL parameters to SQL declaration + value set
--- useful for debugging parametrized SQL queries where all you have is a trace from SQL Profiler
+  - useful for debugging parametrized SQL queries where all you have is a trace from SQL Profiler
 ![sqlparamsToSqlVariables](docs/images/sqlparamsToSqlVariables.png)
 
 - List → CSV (good for columns of values eg. copied from a SSMS resultset)
 - CSV → single quoted CSV 
--- when you need to transfor a column of values from a SSMS result set into a CSV of strings, you run the tool twice
+  - when you need to transfor a column of values from a SSMS result set into a CSV of strings, you run the tool twice
 ![listToCsv](docs/images/listToCsv.png)
