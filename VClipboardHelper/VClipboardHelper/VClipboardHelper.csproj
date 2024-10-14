@@ -62,8 +62,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcrGISDomainsToCSharpEnums.cs" />
-    <Compile Include="AcrGISFieldsToCSharpViewModel.cs" />
+    <Compile Include="ArcGISDomainsToCSharpEnums.cs" />
+    <Compile Include="ArcGISFieldsToCSharpClassesWithMvvmToolkit.cs" />
+    <Compile Include="ArcGISFieldsToCSharpClasses.cs" />
+    <Compile Include="ArcGISFieldsToTypescript.cs" />
     <Compile Include="SqlToCSharpModelBuilder.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Program.cs" />

@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace VClipboardHelper
 {
@@ -22,11 +21,15 @@ namespace VClipboardHelper
 
         private static void SetLastActiveWindow()
         {
-            IntPtr lastWindowHandle = GetWindow(Process.GetCurrentProcess().MainWindowHandle, (uint)GetWindow_Cmd.GW_HWNDNEXT);
+            IntPtr lastWindowHandle = GetWindow(
+                Process.GetCurrentProcess().MainWindowHandle,
+                (uint)GetWindow_Cmd.GW_HWNDNEXT
+            );
             while (true)
             {
                 IntPtr temp = GetParent(lastWindowHandle);
-                if (temp.Equals(IntPtr.Zero)) break;
+                if (temp.Equals(IntPtr.Zero))
+                    break;
                 lastWindowHandle = temp;
             }
             SetForegroundWindow(lastWindowHandle);
@@ -36,22 +39,32 @@ namespace VClipboardHelper
         {
             var mainInput = Clipboard.GetText().Trim();
 
-			if (IsArcGISDomains(mainInput))
+            if (IsArcGISDomains(mainInput))
             {
-				var update = AcrGISDomainsToCSharpEnums.Execute(mainInput);
-				Clipboard.SetText(update);
-				return;
-			}
+                var update = ArcGISDomainsToCSharpEnums.Execute(mainInput);
+                Clipboard.SetText(update);
+                return;
+            }
 
+            if (IsArcGISFields(mainInput))
+            {
+                var update = ArcGISFieldsToCSharpClassesWithMvvmToolkit.Execute(mainInput);
+                update +=
+                    Environment.NewLine
+                    + "========================== FULL PROPS =========================="
+                    + Environment.NewLine
+                    + ArcGISFieldsToCSharpClasses.Execute(mainInput);
+                update +=
+                    Environment.NewLine
+                    + "========================== TYPESCRIPT =========================="
+                    + Environment.NewLine
+                    + ArcGISFieldsToTypescript.Execute(mainInput);
 
-			if (IsArcGISFields(mainInput))
-			{
-				var update = AcrGISFieldsToCSharpViewModel.Execute(mainInput);
-				Clipboard.SetText(update);
-				return;
-			}
+                Clipboard.SetText(update);
+                return;
+            }
 
-			if (IsClass(mainInput))
+            if (IsClass(mainInput))
             {
                 var update = CSharpToSqlTableBuilder.CreateSqlTable(mainInput);
                 Clipboard.SetText(update);
@@ -114,22 +127,21 @@ namespace VClipboardHelper
             }
         }
 
-		private static bool IsArcGISDomains(string mainInput)
-		{
-			return mainInput.StartsWith("{\"domains\":");
-		}
+        private static bool IsArcGISDomains(string mainInput)
+        {
+            return mainInput.StartsWith("{\"domains\":");
+        }
 
-		private static bool IsArcGISFields(string mainInput)
-		{
+        private static bool IsArcGISFields(string mainInput)
+        {
             return mainInput.StartsWith("Fields:");
-		}
+        }
 
-		private static bool IsClass(string mainInput)
+        private static bool IsClass(string mainInput)
         {
             mainInput = mainInput.Trim();
 
-            return 
-                mainInput.StartsWith("public class")
+            return mainInput.StartsWith("public class")
                 || mainInput.StartsWith("protected class")
                 || mainInput.StartsWith("internal class");
         }
@@ -143,16 +155,8 @@ namespace VClipboardHelper
         private static bool IsJson(string mainInput)
         {
             var withoutWhiteSpace = Regex.Replace(mainInput, @"\s+", "");
-            return 
-                (
-                   withoutWhiteSpace.StartsWith("{\"")
-                || withoutWhiteSpace.StartsWith("{[")                 
-                )
-                && 
-                (
-                    withoutWhiteSpace.EndsWith("\"}") 
-                 || withoutWhiteSpace.EndsWith("]}")
-                );
+            return (withoutWhiteSpace.StartsWith("{\"") || withoutWhiteSpace.StartsWith("{["))
+                && (withoutWhiteSpace.EndsWith("\"}") || withoutWhiteSpace.EndsWith("]}"));
         }
 
         private static bool IsSqlTableInfo(string mainInput)
@@ -162,10 +166,8 @@ namespace VClipboardHelper
 
         private static bool IsHttpLink(string mainInput)
         {
-            return (
-                mainInput.StartsWith("http://")
-                || mainInput.StartsWith("https://")
-            ) && !mainInput.Contains(Environment.NewLine);
+            return (mainInput.StartsWith("http://") || mainInput.StartsWith("https://"))
+                && !mainInput.Contains(Environment.NewLine);
         }
 
         private static string BeautifySql(string mainInput)
@@ -209,18 +211,21 @@ namespace VClipboardHelper
                 " on ",
                 " as ",
                 " int ",
-                " int"+Environment.NewLine,
+                " int" + Environment.NewLine,
                 " int=",
                 " varchar(",
-                " varchar"+Environment.NewLine,
+                " varchar" + Environment.NewLine,
                 " nvarchar(",
                 " bit ",
-                " bit"+Environment.NewLine,
+                " bit" + Environment.NewLine,
             };
 
             foreach (var keyword in keyWordsToPrefixWithNewLine)
             {
-                mainInput = mainInput.Replace(keyword.ToUpper(), Environment.NewLine + keyword.ToUpper());
+                mainInput = mainInput.Replace(
+                    keyword.ToUpper(),
+                    Environment.NewLine + keyword.ToUpper()
+                );
                 mainInput = mainInput.Replace(keyword, Environment.NewLine + keyword.ToUpper());
             }
 
@@ -235,8 +240,8 @@ namespace VClipboardHelper
         private static bool IsSql(string mainInput)
         {
             return (mainInput.ContainsIgnoreCase("SELECT") && mainInput.ContainsIgnoreCase("FROM"))
-                   || (mainInput.ContainsIgnoreCase("INSERT") && mainInput.ContainsIgnoreCase("INTO"))
-                   || (mainInput.ContainsIgnoreCase("UPDATE") && mainInput.ContainsIgnoreCase("SET"));
+                || (mainInput.ContainsIgnoreCase("INSERT") && mainInput.ContainsIgnoreCase("INTO"))
+                || (mainInput.ContainsIgnoreCase("UPDATE") && mainInput.ContainsIgnoreCase("SET"));
         }
 
         // expected input:
@@ -261,7 +266,9 @@ namespace VClipboardHelper
             var values = mainInput.Substring(mainInput.IndexOf('\'') + 1).Substring(2); // remove the ['] and the first [,@]
 
             declarations = $"DECLARE {declarations}";
-            var valueList = values.Split(new string[] {",@"}, StringSplitOptions.None).Select(x => $"{Environment.NewLine}set @{x}");
+            var valueList = values
+                .Split(new string[] { ",@" }, StringSplitOptions.None)
+                .Select(x => $"{Environment.NewLine}set @{x}");
             return declarations + string.Join("", valueList);
         }
 
@@ -272,13 +279,14 @@ namespace VClipboardHelper
 
         private static bool IsStackTrace(string mainInput)
         {
-            return mainInput.Contains("Exception") 
-                || mainInput.Contains("exception") 
+            return mainInput.Contains("Exception")
+                || mainInput.Contains("exception")
                 || mainInput.Contains("stack trace");
         }
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
         enum GetWindow_Cmd : uint
         {
             GW_HWNDFIRST = 0,
@@ -289,13 +297,12 @@ namespace VClipboardHelper
             GW_CHILD = 5,
             GW_ENABLEDPOPUP = 6
         }
+
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         public static extern IntPtr GetParent(IntPtr hWnd);
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SetForegroundWindow(IntPtr hWnd);
-
-
-
     }
 }
